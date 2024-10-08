@@ -8,11 +8,11 @@ document.title = gameName;
 // Create a button
 const button = document.createElement("button");
 // Setting the text of the button
-button.textContent = "Click me!";
+button.textContent = "💎";
 
 // Adding an event listener to the button
 button.addEventListener("click", () => {
-  alert("Button clicked!");
+  console.log("Button clicked!");
 });
 document.body.appendChild(button);
 
