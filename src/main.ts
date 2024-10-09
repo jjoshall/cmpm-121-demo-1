@@ -5,39 +5,63 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const gameName = "My awesome game";
 document.title = gameName;
 
-// Create a button
-const button = document.createElement("button");
-// Setting the text of the button
-button.textContent = "💎";
+const button = document.createElement("button"); // Create a button
+button.textContent = "💎"; // Setting the text of the button
 
-// Variables to keep track of the number of clicks and seconds
-let numClicks = 0;
-let numSeconds = 0;
+let numClicks = 0; // Variable to keep track of the number of clicks
+let numSeconds = 0; // Variable to keep track of the number of seconds
+let growthRate = 0; // Variable to keep track of the growth rate of the diamonds
+let isCounterActive = false; // Variable to keep track of whether the counter is active
 const diamondsCollected = document.createElement("div");
 
-// Instead of using setInterval, we can use requestAnimationFrame to make a counter that increases based on how much time has passed
+// Function that makes an automatic counter that will increase the number of diamonds collected every second
 let lastTime = 0;
 function updateCounter(time: number) {
-  if (time - lastTime >= 1000) {
-    numSeconds++;
+  if (isCounterActive && time - lastTime >= 1000) {
+    numSeconds += growthRate; // Increase the number of diamonds collected by the growth rate
     diamondsCollected.textContent = `${numClicks + numSeconds} 💎`;
-    lastTime = time;
+    lastTime = time; // Update the last time
+
+    // If the user has collected 10 diamonds or more, enable the auto miner button
+    if (numClicks + numSeconds >= 10) {
+      autoMinerButton.disabled = false;
+    } else {
+      autoMinerButton.disabled = true; // Disable the auto miner button if the user has not collected 10 diamonds
+    }
   }
   requestAnimationFrame(updateCounter);
 }
-requestAnimationFrame(updateCounter);
 
-/* Adding an interval to update the diamonds collected every second
-setInterval(() => {
-  numSeconds++;
-  diamondsCollected.textContent = `${numClicks + numSeconds} 💎`;
-}, 1000);
-*/
+// Function to set the isCounterActive to true
+function activateCounter() {
+  isCounterActive = true;
+}
+
+const autoMinerButton = document.createElement("button"); // Creating a button for the auto miner
+autoMinerButton.textContent = "Activate auto miner!"; // Setting the text of the auto miner button
+autoMinerButton.disabled = true; // Disabling the auto miner button by default
+app.append(autoMinerButton); // Appending the auto miner button to the app
+
+// Adding an event listener to the auto miner button
+autoMinerButton.addEventListener("click", () => {
+  numClicks -= 10; // Subtracting 10 diamonds from the user's collection
+  diamondsCollected.textContent = `${numClicks + numSeconds} 💎`; // Updating the number of diamonds collected
+  growthRate++; // Increasing the growth rate of the diamonds
+  activateCounter();
+});
+requestAnimationFrame(updateCounter); // Start the counter animation
 
 // Adding an event listener to the button
 button.addEventListener("click", () => {
   numClicks++;
   diamondsCollected.textContent = `${numClicks + numSeconds} 💎`;
+
+  // If the user has collected 10 diamonds or more, enable the auto miner button
+  if (numClicks + numSeconds >= 10) {
+    autoMinerButton.disabled = false;
+  } else {
+    autoMinerButton.disabled = true; // Disable the auto miner button if the user has not collected 10 diamonds
+  }
 });
 
 const header = document.createElement("h1");
