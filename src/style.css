@@ -29,11 +29,31 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-image: linear-gradient(to bottom right, blue, gold);
+}
+
+@keyframes example {
+  0% {
+    transform: scale(1);
+    color: honeydew;
+  }
+  50% {
+    transform: scale(1.1);
+    color: gold;
+  }
+  100% {
+    transform: scale(1);
+    color: honeydew;
+  }
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 5.2em;
   line-height: 1.1;
+  animation-name: example;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
 }
 
 #app {
@@ -44,7 +64,7 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 20px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;

@@ -56,9 +56,9 @@ const button = document.createElement("button"); // Create a button
 button.textContent = "💎⛏️"; // Setting the text of the button
 button.style.border = "none"; // Remove the border
 button.style.background = "none"; // Remove the background
-button.style.fontSize = "2rem"; // Increase the font size for better visibility
+button.style.fontSize = "4rem"; // Increase the font size for better visibility
 button.style.cursor = "pointer"; // Change the cursor to pointer to indicate it's clickable
-button.style.transition = "transform 0.1s"; // Add transition for smooth effect
+button.style.transition = "transform 0.3s"; // Add transition for smooth effect
 
 // Add event listener for click effect
 button.addEventListener("mousedown", () => {
@@ -69,25 +69,35 @@ button.addEventListener("mouseup", () => {
   button.style.transform = "scale(1)"; // Scale back to original size
 });
 
-let numClicks = 0; // Variable to keep track of the number of clicks
+let ownedDiamondCount = 0; // Variable to keep track of the number of diamonds collected
 let numSeconds = 0; // Variable to keep track of the number of seconds
 let growthRate = 0; // Variable to keep track of the growth rate of the diamonds
 let isCounterActive = false; // Variable to keep track of whether the counter is active
-const priceIncrement = 1.15; // Variable to keep track of the price increment
+const itemPriceIncrease = 1.15; // Variable to keep track of the price increment of items by 15%
 const diamondsCollected = document.createElement("div");
 const growthRateText = document.createElement("div"); // Create a div for the growth rate text
 growthRateText.textContent = `Diamond Rate: ${growthRate} 💎/s`; // Shows user what growth rate is
 
 // Function that makes an automatic counter that will increase the number of diamonds collected every second
 let lastTime = 0;
-function updateCounter(time: number) {
-  if (isCounterActive && time - lastTime >= 1000) {
-    numSeconds += growthRate; // Increase the number of diamonds collected by the growth rate
-    diamondsCollected.textContent = `${(numClicks + numSeconds).toFixed(2)} 💎`;
-    growthRateText.textContent = `Diamond Rate: ${growthRate.toFixed(2)} 💎/s`;
-    lastTime = time; // Update the last time
+const oneSecond = 1000;
 
-    // Update item buttons based on the number of diamonds collected
+function updateDiamonds(time: number) {
+  if (time - lastTime >= oneSecond) {
+    numSeconds += growthRate;
+    diamondsCollected.textContent = `${(ownedDiamondCount + numSeconds).toFixed(2)} 💎`;
+    lastTime = time;
+  }
+}
+
+function updateGrowthRateText() {
+  growthRateText.textContent = `Diamond Rate: ${growthRate.toFixed(2)} 💎/s`;
+}
+
+function updateCounter(time: number) {
+  if (isCounterActive) {
+    updateDiamonds(time);
+    updateGrowthRateText();
     updateItemButtonStates();
   }
   requestAnimationFrame(updateCounter);
@@ -99,7 +109,7 @@ function updateItemButtonStates() {
   for (let i = 0; i < availableItems.length; i++) {
     const itemButton = itemButtons[i] as HTMLButtonElement; // Get the button for the item
     const item = availableItems[i]; // Get the item at the current index
-    if (numClicks + numSeconds >= item.diamondPrice) {
+    if (ownedDiamondCount + numSeconds >= item.diamondPrice) {
       itemButton.disabled = false;
     } else {
       itemButton.disabled = true;
@@ -122,16 +132,16 @@ for (let i = 0; i < availableItems.length; i++) {
   itemButton.style.margin = "5px"; // Add margin to the button
   itemButton.style.cursor = "pointer"; // Change the cursor to pointer to indicate it's clickable
   itemButton.disabled = true; // Disable the button
-  let itemCounter = 0; // Variable to count how many items of each type the user has
+  let ownedItemCount = 0; // Variable to count how many items of each type the user has
 
   itemButton.addEventListener("click", () => {
-    if (numClicks + numSeconds >= item.diamondPrice) {
-      numClicks -= item.diamondPrice; // Subtract the price of the item from the number of clicks
-      diamondsCollected.textContent = `${(numClicks + numSeconds).toFixed(2)} 💎`; // Update the text of the diamonds collected
+    if (ownedDiamondCount + numSeconds >= item.diamondPrice) {
+      ownedDiamondCount -= item.diamondPrice; // Subtract the price of the item from the number of clicks
+      diamondsCollected.textContent = `${(ownedDiamondCount + numSeconds).toFixed(2)} 💎`; // Update the text of the diamonds collected
       growthRate += item.growthRate; // Increase the growth rate by the growth rate of the item
-      itemCounter++; // Increase the item counter
-      item.diamondPrice *= priceIncrement; // Increase the price of the item
-      itemButton.textContent = `${item.name} - ${item.diamondPrice.toFixed(2)} 💎 (${itemCounter})`; // Update the text of the button to show the new price of the item and the number of items the user has
+      ownedItemCount++; // Increase the item counter
+      item.diamondPrice *= itemPriceIncrease; // Increase the price of the item
+      itemButton.textContent = `${item.name} - ${item.diamondPrice.toFixed(2)} 💎 (${ownedItemCount})`; // Update the text of the button to show the new price of the item and the number of items the user has
       activateCounter(); // Call the activateCounter function
     }
   });
@@ -140,8 +150,8 @@ for (let i = 0; i < availableItems.length; i++) {
 
 // Adding an event listener to the diamond button
 button.addEventListener("click", () => {
-  numClicks++;
-  diamondsCollected.textContent = `${(numClicks + numSeconds).toFixed(2)} 💎`;
+  ownedDiamondCount++;
+  diamondsCollected.textContent = `${(ownedDiamondCount + numSeconds).toFixed(2)} 💎`;
   growthRateText.textContent = `Diamond Rate: ${growthRate.toFixed(2)} 💎/s`;
 
   // Update item buttons based on the number of diamonds collected
